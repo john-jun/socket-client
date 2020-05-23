@@ -6,6 +6,7 @@ use Air\Socket\Client\Exception\ConnectException;
 use Air\Socket\Client\Exception\ReadFailedException;
 use Air\Socket\Client\Exception\TimeoutException;
 use Air\Socket\Client\Exception\WriteFailedException;
+use Air\Socket\Client\NetAddress\NetAddressInterface;
 use ErrorException;
 use Throwable;
 
@@ -122,21 +123,7 @@ class Socket implements SocketInterface
      */
     public function recv(int $length = 65535, float $timeout = -1)
     {
-        $this->setTimeoutTime($timeout);
-
-        $recvData = '';
-        while (true) {
-            $readData = $this->read($length);
-            $data .= $readData;
-
-            if (strlen($readData) > 0) {
-                break;
-            } else {
-                usleep(100);
-            }
-        }
-
-        return $recvData;
+        return $this->read($length, $timeout);
     }
 
     /**
@@ -185,28 +172,43 @@ class Socket implements SocketInterface
 
     /**
      * @param int $length
-     * @return false|string
+     * @param float|int $timeout
+     * @return bool|false|string
      * @throws ReadFailedException
      * @throws TimeoutException
      */
-    private function read(int $length)
+    private function read(int $length, float $timeout = -1)
     {
-        $packet = fread($this->resource, $length);
+        $rr = [$this->resource];
+        $wr = null;
+        $er = null;
 
-        if (false === $packet) {
-            $info = $this->getStreamMetaData();
-            if ($info['time_out']) {
-                throw new TimeoutException('Read timed-out');
+        while (false !== ($ss = stream_select($rr, $wr, $er, 1))) {
+            if (0 === $ss) {
+                $rr = [$this->resource];
+
+                continue;
             }
 
-            if (0 === $info['unread_bytes'] && $info['blocked'] && $info['eof']) {
-                throw new ReadFailedException('Read got blocked or terminated');
+            $packet = fread(current($rr), $length);
+
+            if (false === $packet) {
+                $info = $this->getStreamMetaData();
+                if ($info['time_out']) {
+                    throw new TimeoutException('Read timed-out');
+                }
+
+                if (0 === $info['unread_bytes'] && $info['blocked'] && $info['eof']) {
+                    throw new ReadFailedException('Read got blocked or terminated');
+                }
+
+                throw new ReadFailedException('Read failed');
             }
 
-            throw new ReadFailedException('Read failed');
+            break;
         }
 
-        return $packet;
+        return $packet ?? false;
     }
 
     /**

@@ -2,6 +2,10 @@
 declare(strict_types=1);
 namespace Air\Socket\Client\NetAddress;
 
+/**
+ * Class TlsNetAddress
+ * @package Air\Socket\Client\NetAddress
+ */
 class TlsNetAddress extends TcpNetAddress
 {
     /**

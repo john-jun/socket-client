@@ -11,23 +11,25 @@ class SocketTest extends TestCase
 {
     public function testConnect()
     {
-        $socket = new Socket(new TlsNetAddress('dev-restful.moftech.net', 443));
-        $socket->connect();
+        $socket = new Socket(new TcpNetAddress('dev-internal-restful.moftech.net', 80));
+        $socket->connect(3);
 
-        $http = "GET /social HTTP/1.1\r\n";
-        $http .= "Host: dev-restful.moftech.net\r\n";
-        $http .= "Accept: text/plant\r\n";
-        $http .= "User-Agent: Tiger Api\r\n";
+        $http = "GET /social/poster/share/xx HTTP/1.1\r\n";
+        $http .= "Host: dev-internal-restful.moftech.net\r\n";
+        $http .= "Accept: */*\r\n";
+        $http .= "User-Agent: " . PHP_VERSION . "\r\n";
         $http .= "Connection: keep-alive\r\n\r\n";
 
         $i = 0;
         while ($i < 1) {
-            var_dump($socket->send($http));
-            var_dump($socket->send($http));
+            var_dump($socket->send($http, 0.00001));
+            var_dump($socket->send($http, 0.00001));
 
-            sleep(3);
-            var_dump($socket->recv(65535));
-
+            $j = 0;
+            while ($j < 2) {
+                var_dump($socket->recv(65535, 1));
+                $j++;
+            }
             $i++;
         }
     }
