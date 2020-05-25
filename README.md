@@ -1,10 +1,19 @@
-# socket-client
+Socket Client
+=============
 A simple socket client library
 
-## Install
-Via Composer
+Install
+-------
+To install with composer
+```sh
+composer require john-jun/socket-client
+```
 
-$ composer require thruster/socket-client
+Test
+-----
+```sh
+composer test
+```
 
-## Test
-$ composer test
+Usage
+-----
