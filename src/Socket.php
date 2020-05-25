@@ -50,7 +50,7 @@ class Socket implements SocketInterface
         if (!$this->isConnected()) {
             try {
                 $time = microtime(true);
-                $resource = @stream_socket_client($this->netAddress->getAddress(), $errNumber, $errString, $timeout);
+                $resource = stream_socket_client($this->netAddress->getAddress(), $errNumber, $errString, $timeout);
                 $this->connectUseTime = microtime(true) - $time;
 
                 if (false !== $resource) {
