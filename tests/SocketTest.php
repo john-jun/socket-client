@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
-namespace Air\Socket\Client\Test;
+namespace Air\SocketClient\Test;
 
-use Air\Socket\Client\NetAddress\TcpNetAddress;
-use Air\Socket\Client\NetAddress\TlsNetAddress;
-use Air\Socket\Client\Socket;
+use Air\SocketClient\NetAddress\TcpNetAddress;
+use Air\SocketClient\NetAddress\TlsNetAddress;
+use Air\SocketClient\Socket;
 use PHPUnit\Framework\TestCase;
 
 class SocketTest extends TestCase

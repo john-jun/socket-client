@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Air\Socket\Client;
+namespace Air\SocketClient;
 
 /**
  * Interface SocketInterface

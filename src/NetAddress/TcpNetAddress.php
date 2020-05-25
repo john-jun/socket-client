@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-namespace Air\Socket\Client\NetAddress;
+namespace Air\SocketClient\NetAddress;
 
-use Air\Socket\Client\NetAddressInterface;
+use Air\SocketClient\NetAddressInterface;
 
 /**
  * Class TcpNetAddress

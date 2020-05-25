@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-namespace Air\Socket\Client\Exception;
+namespace Air\SocketClient\Exception;
 
-use Air\Socket\Client\SocketExceptionInterface;
+use Air\SocketClient\SocketExceptionInterface;
 use Exception;
 
 /**

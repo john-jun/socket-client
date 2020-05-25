@@ -1,7 +1,7 @@
 {
     "name": "john-jun/socket-client",
-    "description": "Socket Client",
-    "keywords": ["Socket", "Socket Client"],
+    "description": "A simple socket client library",
+    "keywords": ["Air", "Socket", "Socket Client"],
     "license": "MIT",
     "authors": [
         {
@@ -12,17 +12,25 @@
     "require": {
         "php": "^7.1"
     },
+    "scripts": {
+        "test": "phpunit tests"
+    },
     "autoload": {
         "psr-4": {
-            "Air\\Socket\\Client\\": "src/"
+            "Air\\SocketClient\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Air\\Socket\\Client\\Test\\": "tests/"
+            "Air\\SocketClient\\Test\\": "tests/"
         }
     },
     "require-dev": {
         "phpunit/phpunit": "^8.5"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
     }
 }
