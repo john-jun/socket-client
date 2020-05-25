@@ -6,7 +6,6 @@ use Air\Socket\Client\Exception\ConnectException;
 use Air\Socket\Client\Exception\ReadFailedException;
 use Air\Socket\Client\Exception\TimeoutException;
 use Air\Socket\Client\Exception\WriteFailedException;
-use Air\Socket\Client\NetAddress\NetAddressInterface;
 use ErrorException;
 use Throwable;
 
@@ -27,6 +26,11 @@ class Socket implements SocketInterface
     private $netAddress;
 
     /**
+     * @var float
+     */
+    private $connectUseTime;
+
+    /**
      * Socket constructor.
      * @param NetAddressInterface $netAddress
      */
@@ -45,7 +49,10 @@ class Socket implements SocketInterface
     {
         if (!$this->isConnected()) {
             try {
+                $time = microtime(true);
                 $resource = @stream_socket_client($this->netAddress->getAddress(), $errNumber, $errString, $timeout);
+                $this->connectUseTime = microtime(true) - $time;
+
                 if (false !== $resource) {
                     $this->resource = $resource;
 
@@ -60,15 +67,6 @@ class Socket implements SocketInterface
         }
 
         return true;
-    }
-
-    /**
-     * Has Connected
-     * @return bool
-     */
-    public function isConnected(): bool
-    {
-        return $this->isUsable() && !feof($this->resource);  //on TCP - other party can close connection.
     }
 
     /**
@@ -123,7 +121,9 @@ class Socket implements SocketInterface
      */
     public function recv(int $length = 65535, float $timeout = -1)
     {
-        return $this->read($length, $timeout);
+        $this->setTimeoutTime($timeout);
+
+        return $this->read($length);
     }
 
     /**
@@ -145,6 +145,23 @@ class Socket implements SocketInterface
     public function __destruct()
     {
         $this->close();
+    }
+
+    /**
+     * Has Connected
+     * @return bool
+     */
+    public function isConnected(): bool
+    {
+        return $this->isUsable() && !feof($this->resource);  //on TCP - other party can close connection.
+    }
+
+    /**
+     * @return float
+     */
+    public function getConnectUseTime(): float
+    {
+        return floatval($this->connectUseTime);
     }
 
     /**
@@ -172,18 +189,17 @@ class Socket implements SocketInterface
 
     /**
      * @param int $length
-     * @param float|int $timeout
      * @return bool|false|string
      * @throws ReadFailedException
      * @throws TimeoutException
      */
-    private function read(int $length, float $timeout = -1)
+    private function read(int $length)
     {
         $rr = [$this->resource];
         $wr = null;
         $er = null;
 
-        while (false !== ($ss = stream_select($rr, $wr, $er, 1))) {
+        while (false !== ($ss = stream_select($rr, $wr, $er, 0, 200000))) {
             if (0 === $ss) {
                 $rr = [$this->resource];
 

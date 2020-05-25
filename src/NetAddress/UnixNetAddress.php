@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace Air\Socket\Client\NetAddress;
 
+use Air\Socket\Client\NetAddressInterface;
+
 /**
  * Class UnixNetAddress
  * @package Air\Socket\Client\NetAddress

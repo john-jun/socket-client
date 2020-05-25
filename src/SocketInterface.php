@@ -13,4 +13,6 @@ interface SocketInterface
 
     public function send(string $data, float $timeout);
     public function recv(int $length, float $timeout);
+
+    public function getConnectUseTime(): float;
 }

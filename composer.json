@@ -1,6 +1,6 @@
 {
     "name": "air/socket-client",
-	"description": "Socket Client",
+    "description": "Socket Client",
     "keywords": ["Socket", "Socket Client"],
     "license": "MIT",
     "authors": [
