@@ -2,10 +2,10 @@
 declare(strict_types=1);
 namespace Air\SocketClient;
 
-use Air\Socket\Client\Exception\ConnectException;
-use Air\Socket\Client\Exception\ReadFailedException;
-use Air\Socket\Client\Exception\TimeoutException;
-use Air\Socket\Client\Exception\WriteFailedException;
+use Air\SocketClient\Exception\ConnectException;
+use Air\SocketClient\Exception\ReadFailedException;
+use Air\SocketClient\Exception\TimeoutException;
+use Air\SocketClient\Exception\WriteFailedException;
 use ErrorException;
 use Throwable;
 
