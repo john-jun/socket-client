@@ -45,12 +45,12 @@ class Socket implements SocketInterface
      * @return bool
      * @throws ConnectException
      */
-    public function connect(float $timeout = null): bool
+    public function connect(float $timeout = -1): bool
     {
         if (!$this->isConnected()) {
             try {
                 $time = microtime(true);
-                $resource = stream_socket_client($this->netAddress->getAddress(), $errNumber, $errString, $timeout ?? 60);
+                $resource = stream_socket_client($this->netAddress->getAddress(), $errNumber, $errString, $timeout > 0 ? $timeout : 60);
                 $this->connectUseTime = microtime(true) - $time;
 
                 if (false !== $resource) {
