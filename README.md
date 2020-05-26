@@ -18,10 +18,10 @@ composer test
 Usage
 -----
 ```php
-use Air\SocketClient\NetAddress\TlsNetAddress;
+use Air\SocketClient\NetAddress\TcpNetAddress;
 use Air\SocketClient\Socket;
 
-$socketClient = new Socket(new TlsNetAddress('domain or ipv4', 443));
+$socketClient = new Socket(new TcpNetAddress('domain or ipv4', 443, true));
 
 //connect & get connect use time
 $socketClient->connect();
