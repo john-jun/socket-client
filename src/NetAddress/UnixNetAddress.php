@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Air\Socket\Client\NetAddress;
+namespace Air\SocketClient\NetAddress;
 
 use Air\SocketClient\NetAddressInterface;
 

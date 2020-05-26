@@ -21,14 +21,21 @@ class TcpNetAddress implements NetAddressInterface
     protected $port;
 
     /**
+     * @var bool
+     */
+    private $overTLS;
+
+    /**
      * TcpNetAddress constructor.
      * @param string $host
      * @param int $port
+     * @param bool $overTLS
      */
-    public function __construct(string $host, int $port)
+    public function __construct(string $host, int $port, bool $overTLS = false)
     {
         $this->host = $host;
         $this->port = $port;
+        $this->overTLS = $overTLS;
     }
 
     /**
@@ -36,6 +43,6 @@ class TcpNetAddress implements NetAddressInterface
      */
     public function getAddress(): string
     {
-        return sprintf('tcp://%s:%s', $this->host, $this->port);
+        return sprintf('%s://%s:%s', ($this->overTLS ? 'tls' : 'tcp'), $this->host, $this->port);
     }
 }

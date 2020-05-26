@@ -45,21 +45,21 @@ class Socket implements SocketInterface
      * @return bool
      * @throws ConnectException
      */
-    public function connect(float $timeout = -1): bool
+    public function connect(float $timeout = null): bool
     {
         if (!$this->isConnected()) {
             try {
                 $time = microtime(true);
-                $resource = stream_socket_client($this->netAddress->getAddress(), $errNumber, $errString, $timeout);
+                $resource = stream_socket_client($this->netAddress->getAddress(), $errNumber, $errString, $timeout ?? 60);
                 $this->connectUseTime = microtime(true) - $time;
 
                 if (false !== $resource) {
                     $this->resource = $resource;
 
-                    //set not blocking mode
                     stream_set_blocking($this->resource, false);
                 }
             } catch (Throwable $e) {
+                $this->close();
                 throw new ConnectException($e->getMessage(), $e->getCode(), $e);
             }
 
