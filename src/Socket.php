@@ -216,7 +216,7 @@ class Socket implements SocketInterface
 
         if (false === $packet) {
             if ($info = $this->getStreamMetaData()) {
-                if ($info['time_out']) {
+                if ($info['timed_out']) {
                     throw new TimeoutException('Read timed-out');
                 }
 
