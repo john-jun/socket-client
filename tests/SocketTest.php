@@ -12,11 +12,11 @@ class SocketTest extends TestCase
     {
         $socket = new Socket(new TcpNetAddress('dev-restful.moftech.net', 443, true));
 
-        $socket->connect(30);
+        $socket->connect();
         echo PHP_EOL . $socket->getConnectUseTime() . PHP_EOL;
 
         $http = "GET /social/poster/share/xx HTTP/1.1\r\n";
-        $http .= "Host: dev-restful.moftech.net\r\n";
+        $http .= "Host: dev-internal-restful.moftech.net\r\n";
         $http .= "Accept: */*\r\n";
         $http .= "User-Agent: " . PHP_VERSION . "\r\n";
         $http .= "Connection: keep-alive\r\n\r\n";
@@ -27,7 +27,7 @@ class SocketTest extends TestCase
 
             $j = 0;
             while ($j < 1) {
-                var_dump($socket->recv(65535, 1));
+                var_dump($socket->recv(1024));
                 $j++;
             }
             $i++;

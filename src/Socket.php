@@ -50,7 +50,14 @@ class Socket implements SocketInterface
         if (!$this->isConnected()) {
             try {
                 $time = microtime(true);
-                $resource = stream_socket_client($this->netAddress->getAddress(), $errNumber, $errString, $timeout > 0 ? $timeout : 60);
+
+                $resource = stream_socket_client(
+                    $this->netAddress->getAddress(),
+                    $errNumber,
+                    $errString,
+                    $timeout > 0 ? $timeout : 30
+                );
+
                 $this->connectUseTime = microtime(true) - $time;
 
                 if (false !== $resource) {
@@ -59,7 +66,6 @@ class Socket implements SocketInterface
                     stream_set_blocking($this->resource, false);
                 }
             } catch (Throwable $e) {
-                $this->close();
                 throw new ConnectException($e->getMessage(), $e->getCode(), $e);
             }
 
@@ -115,7 +121,7 @@ class Socket implements SocketInterface
      * Recv Data
      * @param int $length
      * @param float|int $timeout
-     * @return string
+     * @return int|string
      * @throws ReadFailedException
      * @throws TimeoutException
      */
@@ -123,7 +129,7 @@ class Socket implements SocketInterface
     {
         $this->setTimeoutTime($timeout);
 
-        return $this->read($length);
+        return $this->read($length, $timeout);
     }
 
     /**
@@ -189,42 +195,37 @@ class Socket implements SocketInterface
 
     /**
      * @param int $length
-     * @return bool|false|string
+     * @param float $timeout
+     * @return int|string
      * @throws ReadFailedException
      * @throws TimeoutException
      */
-    private function read(int $length)
+    private function read(int $length, float $timeout)
     {
         $rr = [$this->resource];
-        $wr = null;
-        $er = null;
+        $wr = $er = null;
 
-        while (false !== ($ss = stream_select($rr, $wr, $er, 0, 200000))) {
-            if (0 === $ss) {
-                $rr = [$this->resource];
-
-                continue;
-            }
-
-            $packet = fread(current($rr), $length);
-
-            if (false === $packet) {
-                $info = $this->getStreamMetaData();
-                if ($info['time_out']) {
-                    throw new TimeoutException('Read timed-out');
-                }
-
-                if (0 === $info['unread_bytes'] && $info['blocked'] && $info['eof']) {
-                    throw new ReadFailedException('Read got blocked or terminated');
-                }
-
-                throw new ReadFailedException('Read failed');
-            }
-
-            break;
+        $wait = stream_select($rr, $wr, $er, 0, (int)(($timeout > 0 ? $timeout : 10) * 1e6));
+        if (!$wait) {
+            return 0;
         }
 
-        return $packet ?? false;
+        $packet = fread($this->resource, $length);
+
+        if (false === $packet) {
+            $info = $this->getStreamMetaData();
+            if ($info['time_out']) {
+                throw new TimeoutException('Read timed-out');
+            }
+
+            if (0 === $info['unread_bytes'] && $info['blocked'] && $info['eof']) {
+                throw new ReadFailedException('Read got blocked or terminated');
+            }
+
+            throw new ReadFailedException('Failed to Read request to socket [broken pipe]');
+        }
+
+        return (string)$packet;
     }
 
     /**
