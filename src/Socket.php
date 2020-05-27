@@ -181,8 +181,10 @@ class Socket implements SocketInterface
         $writeResult = fwrite($this->resource, $data);
 
         if (!$writeResult) {
-            if ($this->getStreamMetaData()['timed_out']) {
-                throw new TimeoutException('Write timed-out');
+            if ($info = $this->getStreamMetaData()) {
+                if ($info['timed_out']) {
+                    throw new TimeoutException('Write timed-out');
+                }
             }
 
             if (false === $writeResult) {
@@ -213,13 +215,14 @@ class Socket implements SocketInterface
         $packet = fread($this->resource, $length);
 
         if (false === $packet) {
-            $info = $this->getStreamMetaData();
-            if ($info['time_out']) {
-                throw new TimeoutException('Read timed-out');
-            }
+            if ($info = $this->getStreamMetaData()) {
+                if ($info['time_out']) {
+                    throw new TimeoutException('Read timed-out');
+                }
 
-            if (0 === $info['unread_bytes'] && $info['blocked'] && $info['eof']) {
-                throw new ReadFailedException('Read got blocked or terminated');
+                if (0 === $info['unread_bytes'] && $info['blocked'] && $info['eof']) {
+                    throw new ReadFailedException('Read got blocked or terminated');
+                }
             }
 
             throw new ReadFailedException('Failed to Read request to socket [broken pipe]');
