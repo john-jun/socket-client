@@ -35,6 +35,7 @@ class SocketTest extends TestCase
                 $i++;
             }
         } catch (\Exception $e) {
+            var_dump($e->getMessage());
             $this->assertInstanceOf(SocketException::class, $e);
         }
 

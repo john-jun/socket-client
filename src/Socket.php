@@ -4,6 +4,7 @@ namespace Air\SocketClient;
 
 use Air\SocketClient\Exception\ConnectException;
 use Air\SocketClient\Exception\ReadFailedException;
+use Air\SocketClient\Exception\SelectException;
 use Air\SocketClient\Exception\TimeoutException;
 use Air\SocketClient\Exception\WriteFailedException;
 use ErrorException;
@@ -92,14 +93,13 @@ class Socket implements SocketInterface
     }
 
     /**
-     * Send Data
      * @param string $data
      * @param float|int $timeout
-     * @return false|int
+     * @return int
      * @throws TimeoutException
      * @throws WriteFailedException
      */
-    public function send(string $data, float $timeout = -1)
+    public function send(string $data, float $timeout = 0)
     {
         $sentLength = 0;
         $dataLength = strlen($data);
@@ -120,12 +120,12 @@ class Socket implements SocketInterface
     /**
      * Recv Data
      * @param int $length
-     * @param float|int $timeout
+     * @param float $timeout
      * @return int|string
      * @throws ReadFailedException
      * @throws TimeoutException
      */
-    public function recv(int $length = 65535, float $timeout = -1)
+    public function recv(int $length = 65535, float $timeout = 0)
     {
         $this->setTimeoutTime($timeout);
 
@@ -172,7 +172,7 @@ class Socket implements SocketInterface
 
     /**
      * @param string $data
-     * @return false|int
+     * @return int
      * @throws TimeoutException
      * @throws WriteFailedException
      */
@@ -209,7 +209,7 @@ class Socket implements SocketInterface
 
         $wait = stream_select($rr, $wr, $er, 0, (int)(($timeout > 0 ? $timeout : 10) * 1e6));
         if (!$wait) {
-            return 0;
+            throw new SelectException('select waiting to read timed-out');
         }
 
         $packet = fread($this->resource, $length);
